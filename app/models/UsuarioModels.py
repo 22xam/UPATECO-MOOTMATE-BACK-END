@@ -2,18 +2,30 @@ from .entities.Usuario import Usuario
 from ..database import DatabaseConnection
 
 class UsuarioModel(Usuario):
+
     @classmethod
     def get_usuario(cls, usuario):
         try:
             query = "SELECT * FROM usuarios WHERE id_usuario = %s"
-            params = (usuario.usuario_id,)
+            params = (usuario.id_usuario,)
             result = DatabaseConnection.fetch_one(query, params)
             if result is not None:
-                return cls(*result)
+                usuario = cls(
+                    id_usuario=result[0],  # Índice 0 corresponde a id_usuario
+                    nombre=result[1],       # Índice 1 corresponde a nombre
+                    apellido=result[2],     # Índice 2 corresponde a apellido
+                    alias=result[3],        # Índice 3 corresponde a alias
+                    correo=result[4],       # Índice 4 corresponde a correo
+                    contrasena=result[5],   # Índice 5 corresponde a contrasena
+                    id_tipo_estado=result[6],  # Índice 6 corresponde a id_tipo_estado
+                    fecha_creacion=result[7]  # Índice 7 corresponde a fecha_creacion
+                   )
+                return usuario
             # Si no se encuentra el usuario
             return None
         except Exception as e:
-            return None
+           # Captura la excepción y devuelve un diccionario con el código de error y la descripción
+            return {"error_code": 500, "error_description": str(e)}
         finally:
             DatabaseConnection.close_connection()
     

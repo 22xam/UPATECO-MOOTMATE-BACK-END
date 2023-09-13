@@ -44,5 +44,20 @@ class UsuarioController:
             else:
                  # En caso de error
                  return jsonify({'message': 'No se pudo crear el usuario'}), 500
+    @classmethod
+    def get_user(cls, id_usuario):
+        user = UsuarioModel(id_usuario=id_usuario)
+    
+        result = UsuarioModel.get_usuario(user)
+    
+        if isinstance(result, dict) and 'error_code' in result:
+            # Si result es un diccionario con error_code, significa que se produjo un error
+             return jsonify({'message': 'Error: ' + result['error_description']}), result['error_code']
+    
+        if result is not None:
+            return result.serialize(), 200
+    
+        return jsonify({'message': 'id_usuario no existe'}), 404
+
 
         
