@@ -9,9 +9,10 @@ class UsuarioController:
             alias = data.get('alias'),
             contrasena = data.get('contrasena')
         )
-
+        
         if UsuarioModel.is_registered(usuario):
             session['alias'] = data.get('alias')
+           
             return {"message": "Sesion iniciadas"},200
         else:
             return {"message": "Usuario o contraseña incorrectos"},401
@@ -58,6 +59,21 @@ class UsuarioController:
             return result.serialize(), 200
     
         return jsonify({'message': 'id_usuario no existe'}), 404
-
+    @classmethod
+    def perfil(cls):
+        user = UsuarioModel(
+            alias = session.get('alias'),
+            )
+    
+        result = UsuarioModel.get_perfil(user)
+    
+        if isinstance(result, dict) and 'error_code' in result:
+            # Si result es un diccionario con error_code, significa que se produjo un error
+             return jsonify({'message': 'Error: ' + result['error_description']}), result['error_code']
+    
+        if result is not None:
+            return result.serialize(), 200
+    
+        return jsonify({'message': 'id_usuario no existe'}), 404
 
         
